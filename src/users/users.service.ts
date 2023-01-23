@@ -19,4 +19,12 @@ export class UsersService {
     });
     return user;
   }
+
+  async getUserByPhoneNumber(phoneNumber: string) {
+    const user = await this.userRepository.findOne({
+      where: { phoneNumber },
+      include: { all: true },
+    });
+    return user;
+  }
 }

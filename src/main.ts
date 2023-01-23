@@ -7,8 +7,8 @@ async function start() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Регистрации пользователя по email/phone')
-    .setDescription('Документация REST API')
+    .setTitle('User registration by email/phoneNumber')
+    .setDescription('REST API documentation')
     .setVersion('1.0.0')
     .addTag('user-registration')
     .build();

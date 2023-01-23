@@ -4,8 +4,11 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users/users.model';
+import { UsersModule } from './users/users.module';
 
 @Module({
+  controllers: [AppController],
+  providers: [AppService],
   imports: [
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
@@ -18,12 +21,11 @@ import { User } from './users/users.model';
       models: [User],
       autoLoadModels: true,
     }),
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {
   constructor() {
-    console.log(process.env.DB_NAME);
+    console.log('DB_NAME:', process.env.DB_NAME);
   }
 }
