@@ -4,6 +4,7 @@ import { Column, DataType, Model, Table } from 'sequelize-typescript';
 interface UserCreationAttrs {
   email: string;
   password: string;
+  phoneNumber: string;
 }
 @Table({ tableName: 'users', createdAt: false, updatedAt: false })
 export class User extends Model<User, UserCreationAttrs> {
@@ -21,7 +22,7 @@ export class User extends Model<User, UserCreationAttrs> {
     unique: true,
     allowNull: false,
   })
-  phone: string;
+  phoneNumber: string;
   @ApiProperty({ example: '2323@sdfs.com2', description: 'Unique email' })
   @Column({
     type: DataType.STRING,
@@ -35,4 +36,7 @@ export class User extends Model<User, UserCreationAttrs> {
     allowNull: false,
   })
   password: string;
+  @ApiProperty({ example: 'true', description: 'Activated user or not' })
+  @Column({ type: DataType.BOOLEAN, defaultValue: false })
+  activated: boolean;
 }
