@@ -94,13 +94,17 @@ export class UsersService {
   }
 
   async updatePasswd(userDto: CreateUserDto) {
-    const user = await this.findUser(userDto);
-    const saltRounds = 10;
-    const plainPassword = userDto.password;
-    const hash = await bcrypt.hash(plainPassword, saltRounds);
-
-    user.password = hash;
-    await user.save();
-    return user;
+    const user = await this.validateUser(userDto);
+    if (user) {
+      const saltRounds = 10;
+      const newHash = await bcrypt.hash(userDto.newPassword, saltRounds);
+      user.password = newHash;
+      await user.save();
+      return user;
+    } else {
+      throw new UnauthorizedException({
+        message: 'Wrong previus password',
+      });
+    }
   }
 }

@@ -29,6 +29,7 @@ export class AuthService {
     const user = await this.userService.updatePasswd(userDto);
     return user;
   }
+
   async sendVerificateCodeToUser(userDto: CreateUserDto) {
     const user = await this.userService.findUser(userDto);
     if (user && !user.activated) {

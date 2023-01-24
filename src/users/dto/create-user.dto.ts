@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import {
   IsString,
   IsEmail,
@@ -10,6 +11,9 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
+  @ApiModelProperty({
+    example: `user@email.com !{email or phoneNumber is required (one of them); "newPassword": "xxxxxxxxxxxx" is optional, !only for update-passwd}`
+  })
   @ApiProperty({
     example: 'user@email.com',
     description: 'Unique email (optional if the phone number filled)',
@@ -34,6 +38,17 @@ export class CreateUserDto {
     message: 'Must be at least 4 and not longer than 16 characters',
   })
   readonly password: string;
+
+  @IsOptional()
+  @ApiProperty({
+    example: 'xxxxxxxxxxxx',
+    description: '[Optional, used only when password changed] Unique password',
+  })
+  @IsString({ message: 'Must be a string' })
+  @Length(4, 16, {
+    message: 'Must be at least 4 and not longer than 16 characters',
+  })
+  readonly newPassword: string;
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
   @IsOptional({ each: true })
