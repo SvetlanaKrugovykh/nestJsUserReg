@@ -12,12 +12,19 @@ export class AuthService {
   }
 
   private async validateUser(userDto: CreateUserDto) {
-    const user = await this.userService.getUserByEmail(userDto.email);
+    let user;
+    if (userDto.email) {
+      user = await this.userService.getUserByEmail(userDto.email);
+    } else if (userDto.phoneNumber) {
+      user = await this.userService.getUserByPhoneNumber(userDto.phoneNumber);
+    }
+    if (!user) throw new UnauthorizedException({ message: 'user not found' });
+
     const passwordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
     );
-    if (user && passwordEquals) {
+    if (passwordEquals) {
       return user;
     }
     throw new UnauthorizedException({
