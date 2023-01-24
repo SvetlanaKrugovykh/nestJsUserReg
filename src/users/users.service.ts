@@ -23,6 +23,27 @@ export class UsersService {
     return user;
   }
 
+  async activateUser(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      include: { all: true },
+    });
+    user.activated = true;
+    await user.save();
+    return user;
+  }
+
+  async savePasswd(id: number, passwd: string) {
+    const hash = await bcrypt.hash(passwd, 10);
+    const user = await this.userRepository.findOne({
+      where: { id },
+      include: { all: true },
+    });
+    user.password = hash;
+    await user.save();
+    return user;
+  }
+
   async getUserByEmail(email: string) {
     const user = await this.userRepository.findOne({
       where: { email },
