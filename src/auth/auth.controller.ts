@@ -1,6 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { User } from 'src/users/users.model';
 import { AuthService } from './auth.service';
 
 @ApiTags('Authentification')
@@ -8,18 +10,31 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signUp')
+  @ApiOperation({ summary: 'Validate user' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/sign-in')
+  signIn(@Body() userDto: CreateUserDto) {
+    return this.authService.signIn(userDto);
+  }
+
+  @ApiOperation({ summary: 'Create user' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/sign-up')
   signUp(@Body() userDto: CreateUserDto) {
     return this.authService.signUp(userDto);
   }
 
-  @Post('/verifyUser')
-  async verifyUser(@Body() userDto: CreateUserDto) {
-    return this.authService.sendVerificateCodeToUser(userDto);
+  @ApiOperation({ summary: 'Reset password' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/reset-passwd')
+  async resetPasswd(@Body() userDto: CreateUserDto) {
+    return this.authService.resetPasswd(userDto);
   }
 
-  @Post('/passwdReset')
-  async passwdReset(@Body() userDto: CreateUserDto) {
-    return this.authService.passwdReset(userDto);
+  @ApiOperation({ summary: 'Update password' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/update-passwd')
+  async updatePasswd(@Body() userDto: CreateUserDto) {
+    return this.authService.updatePasswd(userDto);
   }
 }

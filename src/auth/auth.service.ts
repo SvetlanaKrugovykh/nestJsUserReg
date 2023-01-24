@@ -1,7 +1,7 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
-import * as bcrypt from 'bcryptjs';
+
 import {
   sendVerificationEmail,
   sendVerificationSMS,
@@ -9,38 +9,28 @@ import {
 @Injectable()
 export class AuthService {
   constructor(private userService: UsersService) {}
+
+  async signIn(userDto: CreateUserDto) {
+    const user = await this.userService.validateUser(userDto);
+    return user;
+  }
+
   async signUp(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
+    const user = await this.userService.createUser(userDto);
     return user;
   }
 
-  private async findUser(userDto: CreateUserDto) {
-    let user;
-    if (userDto.email) {
-      user = await this.userService.getUserByEmail(userDto.email);
-    } else if (userDto.phoneNumber) {
-      user = await this.userService.getUserByPhoneNumber(userDto.phoneNumber);
-    }
-    if (!user) throw new UnauthorizedException({ message: 'user not found' });
+  async resetPasswd(userDto: CreateUserDto) {
+    const user = await this.userService.resetPasswd(userDto);
     return user;
   }
 
-  private async validateUser(userDto: CreateUserDto) {
-    const user = await this.findUser(userDto);
-    const passwordEquals = await bcrypt.compare(
-      userDto.password,
-      user.password,
-    );
-    if (passwordEquals) {
-      return user;
-    }
-    throw new UnauthorizedException({
-      message: 'Uncorrect email or password',
-    });
+  async updatePasswd(userDto: CreateUserDto) {
+    const user = await this.userService.updatePasswd(userDto);
+    return user;
   }
-
   async sendVerificateCodeToUser(userDto: CreateUserDto) {
-    const user = await this.findUser(userDto);
+    const user = await this.userService.findUser(userDto);
     if (user && !user.activated) {
       const code = Math.floor(Math.random() * Math.floor(999999)).toString();
       if (user.email) {
@@ -51,13 +41,4 @@ export class AuthService {
     }
     return user;
   }
-
-  async passwdReset(userDto: CreateUserDto) {
-    const user = await this.findUser(userDto);
-    if (user && user.activated) {
-      // Send email to user with password recovery link
-    }
-    return user;
-  }
-
 }
