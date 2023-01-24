@@ -39,7 +39,7 @@ export class AuthService {
     });
   }
 
-  async sendVerificateCodeUser(userDto: CreateUserDto) {
+  async sendVerificateCodeToUser(userDto: CreateUserDto) {
     const user = await this.findUser(userDto);
     if (user && !user.activated) {
       const code = Math.floor(Math.random() * Math.floor(999999)).toString();
@@ -52,7 +52,7 @@ export class AuthService {
     return user;
   }
 
-  async passwdRecovery(userDto: CreateUserDto) {
+  async passwdReset(userDto: CreateUserDto) {
     const user = await this.findUser(userDto);
     if (user && user.activated) {
       // Send email to user with password recovery link

@@ -15,11 +15,11 @@ export class AuthController {
 
   @Post('/verifyUser')
   async verifyUser(@Body() userDto: CreateUserDto) {
-    return this.authService.sendVerificateCodeUser(userDto);
+    return this.authService.sendVerificateCodeToUser(userDto);
   }
 
-  @Post('/passwdRecovery')
-  async passwdRecovery(@Body() userDto: CreateUserDto) {
-    return this.authService.passwdRecovery(userDto);
+  @Post('/passwdReset')
+  async passwdReset(@Body() userDto: CreateUserDto) {
+    return this.authService.passwdReset(userDto);
   }
 }
