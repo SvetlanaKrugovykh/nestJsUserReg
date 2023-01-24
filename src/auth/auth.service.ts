@@ -21,7 +21,7 @@ export class AuthService {
       return user;
     }
     throw new UnauthorizedException({
-      message: 'Некорректный емайл или пароль',
+      message: 'Uncorrect email or password',
     });
   }
 }
