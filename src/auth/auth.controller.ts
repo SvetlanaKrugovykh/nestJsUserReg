@@ -31,11 +31,11 @@ export class AuthController {
     return this.authService.signUp(userDto);
   }
 
-  @ApiOperation({ summary: 'Reset password' })
+  @ApiOperation({ summary: 'Set password' })
   @ApiResponse({ status: 200, type: User })
-  @Post('/reset-passwd')
-  async resetPasswd(@Body() userDto: CreateUserDto) {
-    return this.authService.resetPasswd(userDto);
+  @Post('/set-passwd')
+  async setPasswd(@Body() userDto: CreateUserDto) {
+    return this.authService.setPasswd(userDto);
   }
 
   @ApiOperation({ summary: 'Update password' })

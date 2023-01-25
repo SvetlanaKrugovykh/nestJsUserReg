@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import {
+  IsEmpty,
   IsString,
   IsEmail,
   Length,
@@ -32,10 +33,14 @@ export class CreateUserDto {
   @IsPhoneNumber('UA', { message: 'Incorrect phone number' })
   readonly phoneNumber: string;
 
-  @ApiProperty({ example: 'xxxxxxxxxxxx', description: 'Unique password' })
-  @IsString({ message: 'Must be a string' })
+  @IsOptional()
+  @ApiProperty({
+    example: 'xxxxxxxxxxxx',
+    description: '[Optional, used only when password changed] Unique password',
+  })
+  @IsString({ message: 'password must be a string' })
   @Length(4, 16, {
-    message: 'Must be at least 4 and not longer than 16 characters',
+    message: 'password must be at least 4 and not longer than 16 characters',
   })
   readonly password: string;
 
@@ -54,7 +59,7 @@ export class CreateUserDto {
   @ApiProperty({
     description: '[Optional, used only user is creating] ',
   })
-  readonly verificationCode: string;
+  verificationCode: string;
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
   @IsOptional({ each: true })

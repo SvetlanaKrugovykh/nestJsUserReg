@@ -21,8 +21,8 @@ export class AuthService {
     return user;
   }
 
-  async resetPasswd(userDto: CreateUserDto) {
-    const user = await this.userService.resetPasswd(userDto);
+  async setPasswd(userDto: CreateUserDto) {
+    const user = await this.userService.setPasswd(userDto);
     return user;
   }
 
