@@ -57,7 +57,9 @@ export class User extends Model<User, UserCreationAttrs> {
     allowNull: false,
   })
   password: string;
+
   @ApiProperty({ example: 'true', description: 'Activated user or not' })
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   activated: boolean;
+
 }

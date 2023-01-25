@@ -1,10 +1,9 @@
 import * as nodemailer from 'nodemailer';
 
-
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT) || 25,
-  secure: true, 
+  secure: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD,
@@ -13,13 +12,19 @@ const transporter = nodemailer.createTransport({
 
 export async function sendVerificationEmail(email: string, code: string) {
   const mailOptions = {
-    from: '"Verification Code" <verification@example.com>',
+    from: `${process.env.SMTP_USER}`,
     to: email,
-    subject: 'Verification Code',
+    subject: 'Verification Code is here',
     text: `Your verification code is ${code}`,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Message sent: %s', info.messageId);
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -27,11 +32,9 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = 'twilio(accountSid, authToken)';
 
 export async function sendVerificationSMS(phoneNumber: string, code: string) {
-  await ({
+  await {
     body: `Your verification code is ${code}`,
     from: '+1234567890',
     to: phoneNumber,
-  });
-
+  };
 }
-

@@ -10,6 +10,13 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Activate user' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/activate')
+  activate(@Body() userDto: CreateUserDto) {
+    return this.authService.activate(userDto);
+  }
+
   @ApiOperation({ summary: 'Validate user' })
   @ApiResponse({ status: 200, type: User })
   @Post('/sign-in')

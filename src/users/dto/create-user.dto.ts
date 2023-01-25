@@ -12,7 +12,7 @@ import {
 
 export class CreateUserDto {
   @ApiModelProperty({
-    example: `user@email.com !{email or phoneNumber is required (one of them); "newPassword": "xxxxxxxxxxxx" is optional, !only for update-passwd}`
+    example: `user@email.com !{email or phoneNumber is required (one of them); "newPassword": "xxxxxxxxxxxx" is optional, !only for update-passwd}`,
   })
   @ApiProperty({
     example: 'user@email.com',
@@ -49,6 +49,12 @@ export class CreateUserDto {
     message: 'Must be at least 4 and not longer than 16 characters',
   })
   readonly newPassword: string;
+
+  @IsOptional()
+  @ApiProperty({
+    description: '[Optional, used only user is creating] ',
+  })
+  readonly verificationCode: string;
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
   @IsOptional({ each: true })

@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './users.model';
 import * as bcrypt from 'bcryptjs';
-
+import {
+  sendVerificationEmail,
+  sendVerificationSMS,
+} from 'src/common/sendouter';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User) private userRepository: typeof User) {}
@@ -56,27 +59,24 @@ export class UsersService {
     if (existingUser) {
       return existingUser;
     } else {
-      //create new user
       const saltRounds = 10;
       const plainPassword = userDto.password;
-
       const hash = await bcrypt.hash(plainPassword, saltRounds);
-
       const newDto = {
         ...userDto,
         password: hash,
       };
-
       const newUser = await this.userRepository.create(newDto);
+      const code = '1';
+      const user = this.sendVerificateCodeToUser(userDto, code);
+      console.log('1', code);
+
       return newUser;
     }
   }
 
-  async activateUser(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      include: { all: true },
-    });
+  async activateUser(userDto: CreateUserDto) {
+    const user = await this.findUser(userDto);
     user.activated = true;
     await user.save();
     return user;
@@ -106,5 +106,22 @@ export class UsersService {
         message: 'Wrong previus password',
       });
     }
+  }
+
+  async sendVerificateCodeToUser(userDto: CreateUserDto, code: string) {
+    const user = await this.findUser(userDto);
+    if (user && !user.activated) {
+      code = Math.floor(Math.random() * Math.floor(999999)).toString();
+      try {
+        if (user.email) {
+          sendVerificationEmail(user.email, code);
+        } else if (user.phoneNumber) {
+          sendVerificationSMS(user.phoneNumber, code);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    return user;
   }
 }
