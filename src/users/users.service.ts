@@ -120,6 +120,8 @@ export class UsersService {
     if (userDto.verificationCode == user.password) {
       user.activated = true;
       await user.save();
+      const { password, ...dataValuesWithoutPassword } = user.dataValues;
+      user.dataValues = dataValuesWithoutPassword;
       return user;
     } else {
       throw new UnauthorizedException({
@@ -153,7 +155,7 @@ export class UsersService {
       return user;
     } else {
       throw new UnauthorizedException({
-        message: 'Wrong previus password',
+        message: 'Wrong previous password',
       });
     }
   }
