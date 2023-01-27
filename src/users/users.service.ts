@@ -115,6 +115,11 @@ export class UsersService {
     if (!user) {
       throw new UnauthorizedException({ message: 'User does not exist' });
     }
+    if (user.activated) {
+      throw new UnauthorizedException({
+        message: 'The user was activated earlier',
+      });
+    }
     console.log(userDto.verificationCode);
     console.log(user.password);
     if (userDto.verificationCode == user.password) {
@@ -131,6 +136,28 @@ export class UsersService {
   }
 
   async setPasswd(userDto: CreateUserDto) {
+    const user = await this.findUser(userDto);
+    if (!user) {
+      throw new UnauthorizedException({ message: 'User does not exist' });
+    }
+    if (user.activated) {
+      throw new UnauthorizedException({
+        message:
+          'Method set-passwd is intended for users, who not activated yet',
+      });
+    }
+    const saltRounds = 10;
+    const plainPassword = userDto.password;
+    const hash = await bcrypt.hash(plainPassword, saltRounds);
+
+    user.password = hash;
+    await user.save();
+    const { password, ...dataValuesWithoutPassword } = user.dataValues;
+    user.dataValues = dataValuesWithoutPassword;
+    return user;
+  }
+
+  async resetPasswd(userDto: CreateUserDto) {
     const user = await this.findUser(userDto);
     const saltRounds = 10;
     const plainPassword = userDto.password;

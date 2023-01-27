@@ -1,9 +1,18 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Request,
+  Post,
+  UseGuards,
+  Get,
+} from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/users.model';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Authentification')
 @Controller('auth')
@@ -43,5 +52,24 @@ export class AuthController {
   @Post('/update-passwd')
   async updatePasswd(@Body() userDto: CreateUserDto) {
     return this.authService.updatePasswd(userDto);
+  }
+
+  @ApiOperation({ summary: 'Reset password' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/reset-passwd')
+  async resetPasswd(@Body() userDto: CreateUserDto) {
+    return this.authService.resetPasswd(userDto);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('/login')
+  async login(@Request() req) {
+    return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }
