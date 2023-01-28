@@ -16,6 +16,25 @@ export class User extends Model<User, UserCreationAttrs> {
     primaryKey: true,
   })
   id: number;
+
+  @ApiProperty({
+    example: 'xxxxxxxx@xxx.com',
+    description: 'Unique email, (optional if the phone number filled)',
+  })
+  @Column({
+    type: DataType.STRING,
+    unique: true,
+    allowNull: true,
+    validate: {
+      isEmailOrPhoneNumber() {
+        if (!this.email && !this.phoneNumber) {
+          throw new Error('You must provide either an email or a phone number');
+        }
+      },
+    },
+  })
+  email: string;
+
   @ApiProperty({
     example: '+380671111111',
     description: 'Unique phone number (optional if email filled)',
@@ -33,25 +52,11 @@ export class User extends Model<User, UserCreationAttrs> {
     },
   })
   phoneNumber: string;
-  @ApiProperty({
-    example: '2323@sdfs.com2',
-    description: 'Unique email, (optional if the phone number filled)',
-  })
-  @Column({
-    type: DataType.STRING,
-    unique: true,
-    allowNull: true,
-    validate: {
-      isEmailOrPhoneNumber() {
-        if (!this.email && !this.phoneNumber) {
-          throw new Error('You must provide either an email or a phone number');
-        }
-      },
-    },
-  })
-  email: string;
 
-  @ApiProperty({ example: 'xxxxxxxxxxxx', description: 'Unique password' })
+  @ApiProperty({
+    example: 'xxxxxxxxxxxx',
+    description: 'Unique password, length for 4 to 16',
+  })
   @Column({
     type: DataType.STRING,
     allowNull: true,
@@ -62,4 +67,26 @@ export class User extends Model<User, UserCreationAttrs> {
   @Column({ type: DataType.BOOLEAN, defaultValue: false })
   activated: boolean;
 
+  @ApiProperty({ example: 'XXXXXX', description: 'Verification code' })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  verificationCode: string;
+
+  @ApiProperty({ example: '01/02/2023 15:15:22', description: 'Created at' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  createdAt: Date;
+
+  @ApiProperty({ example: '01/02/2023 15:15:22', description: 'Updated at' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  updatedAt: Date;
 }
+
+//`␍` should be stayed but prittier does not rematk it
