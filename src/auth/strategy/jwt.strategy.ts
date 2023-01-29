@@ -2,10 +2,9 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { jwtConstants } from '../constants';
-import { ContextIdFactory } from '@nestjs/core';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -14,19 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
- // async validate(payload: any) {
- //   return { userId: payload.sub, username: payload.username };
- // }
-	async validate(
-		payload: any,
-  request: Request,
-  username: string,
-  password: string,
-) {
-  const contextId = ContextIdFactory.getByRequest(request);
-  // "AuthService" is a request-scoped provider
-  //const authService = await this.moduleRef.resolve(AuthService, //contextId);
-  //...
-	return { userId: payload.sub, username: payload.username };
-}
+  async validate(payload: any) {
+    return { userId: payload.sub, username: payload.username };
+  }
 }

@@ -11,8 +11,8 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
 import { CreateUserDto } from 'src/users/dto/create-user.dto.v1';
 import { User } from 'src/users/users.model';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Authentification')
@@ -64,10 +64,10 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({ status: 200, type: User })
-  //@UseGuards(LocalAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Req() req) {
-    return this.authService.login(req.body);
+  async login(@Request() req) {
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)

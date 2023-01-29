@@ -39,19 +39,4 @@ export class AuthService {
     const user = await this.userService.resetPasswd(userDto);
     return user;
   }
-
-  async login(user: any) {
-    const rez = await this.userService.validateUserByEmailAndPasswd(
-      user.login,
-      user.password,
-    );
-    if (rez) {
-      const payload = { username: user.username, sub: user.id };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
-    } else {
-      return rez;
-    }
-  }
 }
