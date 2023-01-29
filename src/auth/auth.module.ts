@@ -12,7 +12,7 @@ import { jwtConstants } from './constants';
   controllers: [AuthController],
   imports: [
     forwardRef(() => UsersModule),
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'local' }),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '60s' },

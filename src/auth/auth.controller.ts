@@ -5,10 +5,11 @@ import {
   Post,
   UseGuards,
   Get,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto.v1';
 import { User } from 'src/users/users.model';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
@@ -22,21 +23,21 @@ export class AuthController {
   @ApiOperation({ summary: 'Activate user' })
   @ApiResponse({ status: 200, type: User })
   @Post('/activate')
-  activate(@Body() userDto: CreateUserDto) {
+  async activate(@Body() userDto: CreateUserDto) {
     return this.authService.activate(userDto);
   }
 
   @ApiOperation({ summary: 'Validate user' })
   @ApiResponse({ status: 200, type: User })
   @Post('/sign-in')
-  signIn(@Body() userDto: CreateUserDto) {
+  async signIn(@Body() userDto: CreateUserDto) {
     return this.authService.signIn(userDto);
   }
 
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({ status: 200, type: User })
   @Post('/sign-up')
-  signUp(@Body() userDto: CreateUserDto) {
+  async signUp(@Body() userDto: CreateUserDto) {
     return this.authService.signUp(userDto);
   }
 
@@ -61,14 +62,16 @@ export class AuthController {
     return this.authService.resetPasswd(userDto);
   }
 
-  @UseGuards(LocalAuthGuard)
+  @ApiOperation({ summary: 'Login' })
+  @ApiResponse({ status: 200, type: User })
+  //@UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Req() req) {
+    return this.authService.login(req.body);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
+  @Get('/profile')
   getProfile(@Request() req) {
     return req.user;
   }

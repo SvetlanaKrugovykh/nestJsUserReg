@@ -2,10 +2,9 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
-  ConsoleLogger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto.v1';
 import { User } from './users.model';
 import * as bcrypt from 'bcryptjs';
 import {
@@ -41,6 +40,25 @@ export class UsersService {
       include: { all: true },
     });
     return user;
+  }
+
+  async validateUserByEmailAndPasswd(email: string, password: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      include: { all: true },
+    });
+    if (!user) {
+      throw new UnauthorizedException({ message: 'User does not exist' });
+    } else {
+      const passwordEquals = await bcrypt.compare(password, user.password);
+      if (passwordEquals) {
+        return user;
+      } else {
+        throw new UnauthorizedException({
+          message: 'Uncorrect email or password',
+        });
+      }
+    }
   }
 
   async validateUser(userDto: CreateUserDto) {
@@ -105,7 +123,8 @@ export class UsersService {
 
   async saveVerificateCode(userDto: CreateUserDto) {
     const user = await this.findUser(userDto);
-    user.password = userDto.verificationCode;
+    user.verificationCode = userDto.verificationCode;
+    user.createdAt = new Date();
     await user.save();
     return user;
   }
@@ -120,10 +139,18 @@ export class UsersService {
         message: 'The user was activated earlier',
       });
     }
-    console.log(userDto.verificationCode);
-    console.log(user.password);
-    if (userDto.verificationCode == user.password) {
+
+    if (
+      new Date().getTime() - user.createdAt >
+      Number(process.env.VERIFICATION_CODE_TIME)
+    ) {
+      throw new UnauthorizedException({
+        message: 'Exceeds the time limit for verification',
+      });
+    }
+    if (userDto.verificationCode == user.verificationCode) {
       user.activated = true;
+      user.updatedAt = new Date();
       await user.save();
       const { password, ...dataValuesWithoutPassword } = user.dataValues;
       user.dataValues = dataValuesWithoutPassword;
@@ -176,6 +203,7 @@ export class UsersService {
       const saltRounds = 10;
       const newHash = await bcrypt.hash(userDto.newPassword, saltRounds);
       user.password = newHash;
+      user.updatedAt = new Date();
       await user.save();
       const { password, ...dataValuesWithoutPassword } = user.dataValues;
       user.dataValues = dataValuesWithoutPassword;
