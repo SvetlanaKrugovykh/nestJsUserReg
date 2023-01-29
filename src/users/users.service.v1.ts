@@ -79,9 +79,11 @@ export class UsersService {
     );
 
     if (passwordEquals) {
-      const { password, ...dataValuesWithoutPassword } = user.dataValues;
-      user.dataValues = dataValuesWithoutPassword;
-      return user;
+      return {
+        ...user.dataValues,
+        password: undefined,
+        verificationCode: undefined,
+      };
     } else {
       throw new UnauthorizedException({
         message: 'Uncorrect email or password',
@@ -152,9 +154,11 @@ export class UsersService {
       user.activated = true;
       user.updatedAt = new Date();
       await user.save();
-      const { password, ...dataValuesWithoutPassword } = user.dataValues;
-      user.dataValues = dataValuesWithoutPassword;
-      return user;
+      return {
+        ...user.dataValues,
+        password: undefined,
+        verificationCode: undefined,
+      };
     } else {
       throw new UnauthorizedException({
         message: 'Wrong verification code',
@@ -179,9 +183,11 @@ export class UsersService {
 
     user.password = hash;
     await user.save();
-    const { password, ...dataValuesWithoutPassword } = user.dataValues;
-    user.dataValues = dataValuesWithoutPassword;
-    return user;
+    return {
+      ...user.dataValues,
+      password: undefined,
+      verificationCode: undefined,
+    };
   }
 
   async resetPasswd(userDto: CreateUserDto) {
@@ -192,22 +198,27 @@ export class UsersService {
 
     user.password = hash;
     await user.save();
-    const { password, ...dataValuesWithoutPassword } = user.dataValues;
-    user.dataValues = dataValuesWithoutPassword;
-    return user;
+    return {
+      ...user.dataValues,
+      password: undefined,
+      verificationCode: undefined,
+    };
   }
 
   async updatePasswd(userDto: CreateUserDto) {
-    const user = await this.validateUser(userDto);
+    let user = await this.validateUser(userDto);
     if (user) {
       const saltRounds = 10;
       const newHash = await bcrypt.hash(userDto.newPassword, saltRounds);
-      user.password = newHash;
+      user = await this.findUser(userDto);
       user.updatedAt = new Date();
+      user.password = newHash;
       await user.save();
-      const { password, ...dataValuesWithoutPassword } = user.dataValues;
-      user.dataValues = dataValuesWithoutPassword;
-      return user;
+      return {
+        ...user.dataValues,
+        password: undefined,
+        verificationCode: undefined,
+      };
     } else {
       throw new UnauthorizedException({
         message: 'Wrong previous password',
