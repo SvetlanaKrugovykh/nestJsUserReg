@@ -55,7 +55,7 @@ export class UsersService {
         return user;
       } else {
         throw new UnauthorizedException({
-          message: 'Uncorrect email or password',
+          message: 'Incorrect email or password',
         });
       }
     }
@@ -86,7 +86,7 @@ export class UsersService {
       };
     } else {
       throw new UnauthorizedException({
-        message: 'Uncorrect email or password',
+        message: 'Incorrect email or password',
       });
     }
   }

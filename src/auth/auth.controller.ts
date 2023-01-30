@@ -29,9 +29,10 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Validate user' })
   @ApiResponse({ status: 200, type: User })
+  @UseGuards(LocalAuthGuard)
   @Post('/sign-in')
-  async signIn(@Body() userDto: CreateUserDto) {
-    return this.authService.signIn(userDto);
+  async login(@Request() req) {
+    return req.user;
   }
 
   @ApiOperation({ summary: 'Create user' })
@@ -60,14 +61,6 @@ export class AuthController {
   @Post('/reset-passwd')
   async resetPasswd(@Body() userDto: CreateUserDto) {
     return this.authService.resetPasswd(userDto);
-  }
-
-  @ApiOperation({ summary: 'Login' })
-  @ApiResponse({ status: 200, type: User })
-  @UseGuards(LocalAuthGuard)
-  @Post('/login')
-  async login(@Request() req) {
-    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
