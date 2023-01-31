@@ -1,38 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
-import { userProperties } from '../properties/fields-model';
+import { userProperties } from '../properties/fields-user-model';
+import { CreateDto } from 'src/common/dto/createDto';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 
-export class CreateUserDto {
-  constructor() {
-    for (const prop of userProperties) {
-      if (prop.validate) {
-        if (prop.IsEmail) {
-          this.addIsEmail(prop);
-        }
-      }
-      this.addApiProperty(prop);
-    }
+export class CreateUserDto2 extends CreateDto {
+  email?: string;
+  phoneNumber?: string;
+  password?: string;
+
+  constructor(private readonly userDto: { [x: string]: any }) {
+    super(userProperties, userDto);
   }
 
-  addIsEmail(prop) {
-    const isEmail = IsEmail(
-      { allow_display_name: false },
-      { message: 'Incorrect email' },
-    );
-    Object.defineProperty(this, prop.name, {
-      ...isEmail,
-      ...prop,
-    });
-  }
-
-  addApiProperty(prop) {
-    const apiProperty = ApiProperty({
-      example: prop.example,
-      description: prop.description,
-    });
-    Object.defineProperty(this, prop.name, {
-      ...apiProperty,
-      ...prop,
-    });
+  @ApiModelProperty({
+    example: `user@email.com !{email or phoneNumber is required (one of them); "newPassword": "xxxxxxxxxxxx" is optional, !only for update-passwd}`,
+  })
+  @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
+  @IsOptional({ each: true })
+  get oneOfEmailPhoneNumber() {
+    return !!this.email || !!this.phoneNumber;
   }
 }

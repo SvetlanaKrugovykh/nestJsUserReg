@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
 import {
-  IsEmpty,
   IsString,
   IsEmail,
   Length,
