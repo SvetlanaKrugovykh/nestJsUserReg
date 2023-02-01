@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDto } from './dto/create-user.dto.v1';
+import { CreateUserDto } from './dto/create-user.dto.v2';
 import { User } from './users.model';
 import * as bcrypt from 'bcryptjs';
 import {

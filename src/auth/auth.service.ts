@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto.v1';
+import { CreateUserDto } from 'src/users/dto/create-user.dto.v2';
 import { UsersService } from '../users/users.service.v1';
 import { JwtService } from '@nestjs/jwt';
-
-import { CreateUserDto2} from 'src/users/dto/create-user.dto.v2';
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -38,9 +35,7 @@ export class AuthService {
   }
 
   async resetPasswd(userDto: CreateUserDto) {
-		const user2 = new CreateUserDto2(userDto);
-		console.log(user2);
-		
+		const userx = new CreateUserDto(userDto); //temprorary for debugging
     const user = await this.userService.resetPasswd(userDto);
     return user;
   }

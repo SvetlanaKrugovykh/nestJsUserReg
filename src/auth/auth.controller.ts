@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
-import { CreateUserDto } from 'src/users/dto/create-user.dto.v1';
+import { CreateUserDto } from 'src/users/dto/create-user.dto.v2';
 import { User } from 'src/users/users.model';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
