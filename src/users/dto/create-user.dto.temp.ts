@@ -1,8 +1,9 @@
-import { userProperties } from '../properties/fields-user-model';
 import { CreateDto } from 'src/common/dto/createDto';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiModelProperty } from '@nestjs/swagger/dist/decorators/api-model-property.decorator';
-export class CreateUserDto extends CreateDto {
+
+const userProperties = [];
+export class UserDto extends CreateDto {
   email?: string;
   phoneNumber?: string;
   password?: string;
@@ -11,6 +12,9 @@ export class CreateUserDto extends CreateDto {
 
   constructor(private readonly userDto: { [x: string]: any }) {
     super(userProperties, userDto);
+    const dto = new CreateDto(userProperties, userDto);
+    Object.assign(this, dto);
+    console.log('івапівапівап', this);
   }
 
   @ApiModelProperty({

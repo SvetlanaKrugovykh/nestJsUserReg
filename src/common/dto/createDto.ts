@@ -1,10 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsEmail,
-  Length,
-  IsPhoneNumber,
-} from 'class-validator';
+import { IsString, IsEmail, Length, IsPhoneNumber } from 'class-validator';
 
 export class CreateDto {
   constructor(
@@ -12,11 +7,10 @@ export class CreateDto {
     dto: { [x: string]: any },
   ) {
     for (const prop of properties) {
-      this.apiProp(prop);
       for (const key in dto) {
         if (prop.name == key) {
           Object.defineProperty(this, key, {
-            value: undefined,
+            value: dto[key],
             writable: true,
             configurable: true,
             enumerable: true,
@@ -25,17 +19,16 @@ export class CreateDto {
           if (prop.validate) this.validate.bind(this)(prop, key);
         }
       }
+      this.assignApiProperty(prop);
     }
   }
 
-  private apiProp(prop) {
-    if (!prop.exclude_dto) {
-      if (prop.example && prop.description) {
-        ApiProperty({
-          example: prop.example,
-          description: prop.description,
-        })(this, prop);
-      }
+  private assignApiProperty(prop) {
+    if (prop.example && prop.description) {
+      ApiProperty({
+        example: prop.example,
+        description: prop.description,
+      });
     }
   }
 

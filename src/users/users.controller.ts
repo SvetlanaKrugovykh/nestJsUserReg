@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { UsersService } from './users.service.v1';
-import { CreateUserDto } from './dto/create-user.dto.v2';
+import { UsersService } from './users.service';
+import { UserDto } from './dto/user.dto';
 import { User } from './users.model';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
@@ -10,10 +10,17 @@ import { ApiTags } from '@nestjs/swagger/dist';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create user' })
+  @ApiOperation({ summary: 'Add address' })
   @ApiResponse({ status: 200, type: User })
-  @Post()
-  create(@Body() userDto: CreateUserDto) {
-    return this.usersService.createUser(userDto);
+  @Post('/add-address')
+  createAddress(@Body() userDto: UserDto) {
+    return this.usersService.addAddress(userDto);
+  }
+
+  @ApiOperation({ summary: 'Get addresses' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/get-addresses')
+  getAddresses(@Body() userDto: UserDto) {
+    return this.usersService.getAddresses(userDto);
   }
 }

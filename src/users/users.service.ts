@@ -4,19 +4,24 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDto } from './dto/create-user.dto.v2';
+import { UserDto } from './dto/user.dto';
 import { User } from './users.model';
 import * as bcrypt from 'bcryptjs';
 import {
   sendVerificationEmail,
   sendVerificationSMS,
 } from 'src/common/sendouter';
+import { AddressesService } from './contacts/addresses.services';
+
 @Injectable()
 export class UsersService {
   [x: string]: any;
-  constructor(@InjectModel(User) private userRepository: typeof User) {}
+  constructor(
+    @InjectModel(User) private userRepository: typeof User,
+    private addressesService: AddressesService,
+  ) {}
 
-  async findUser(userDto: CreateUserDto) {
+  async findUser(userDto: UserDto) {
     let user;
     if (userDto.email) {
       user = await this.getUserByEmail(userDto.email);
@@ -61,7 +66,7 @@ export class UsersService {
     }
   }
 
-  async validateUser(userDto: CreateUserDto) {
+  async validateUser(userDto: UserDto) {
     const user = await this.findUser(userDto);
     if (!user) {
       throw new UnauthorizedException({ message: 'User does not exist' });
@@ -91,7 +96,7 @@ export class UsersService {
     }
   }
 
-  async createUser(userDto: CreateUserDto) {
+  async createUser(userDto: UserDto) {
     const existingUser = await this.findUser(userDto);
     if (existingUser) {
       throw new ConflictException({
@@ -123,7 +128,7 @@ export class UsersService {
     }
   }
 
-  async saveVerificateCode(userDto: CreateUserDto) {
+  async saveVerificateCode(userDto: UserDto) {
     const user = await this.findUser(userDto);
     user.verificationCode = userDto.verificationCode;
     user.createdAt = new Date();
@@ -131,7 +136,7 @@ export class UsersService {
     return user;
   }
 
-  async activateUser(userDto: CreateUserDto) {
+  async activateUser(userDto: UserDto) {
     const user = await this.findUser(userDto);
     if (!user) {
       throw new UnauthorizedException({ message: 'User does not exist' });
@@ -166,7 +171,7 @@ export class UsersService {
     }
   }
 
-  async setPasswd(userDto: CreateUserDto) {
+  async setPasswd(userDto: UserDto) {
     const user = await this.findUser(userDto);
     if (!user) {
       throw new UnauthorizedException({ message: 'User does not exist' });
@@ -190,7 +195,7 @@ export class UsersService {
     };
   }
 
-  async resetPasswd(userDto: CreateUserDto) {
+  async resetPasswd(userDto: UserDto) {
     const user = await this.findUser(userDto);
     const saltRounds = 10;
     const plainPassword = userDto.password;
@@ -205,7 +210,7 @@ export class UsersService {
     };
   }
 
-  async updatePasswd(userDto: CreateUserDto) {
+  async updatePasswd(userDto: UserDto) {
     let user = await this.validateUser(userDto);
     if (user) {
       const saltRounds = 10;
@@ -226,7 +231,7 @@ export class UsersService {
     }
   }
 
-  async sendVerificateCodeToUser(userDto: CreateUserDto, code: string) {
+  async sendVerificateCodeToUser(userDto: UserDto, code: string) {
     const user = await this.findUser(userDto);
     if (user && !user.activated) {
       try {
@@ -239,5 +244,23 @@ export class UsersService {
         console.log(error);
       }
     }
+  }
+
+  async addAddress(userDto: any) {
+    const user = await this.findUser(userDto);
+    if (!user) {
+      throw new UnauthorizedException({ message: 'User does not exist' });
+    }
+    const address = await this.addressesService.createAddress(userDto, user);
+    return address;
+  }
+
+  async getAddresses(userDto: any) {
+    const user = await this.findUser(userDto);
+    if (!user) {
+      throw new UnauthorizedException({ message: 'User does not exist' });
+    }
+    const addresses = await this.addressesService.getAddresses(userDto, user);
+    return addresses;
   }
 }

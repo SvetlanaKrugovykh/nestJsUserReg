@@ -10,7 +10,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class UserDto {
   @ApiModelProperty({
     example: `user@email.com !{email or phoneNumber is required (one of them); "newPassword": "xxxxxxxxxxxx" is optional, !only for update-passwd}`,
   })
@@ -59,6 +59,34 @@ export class CreateUserDto {
     description: '[Optional, used only user is creating] ',
   })
   verificationCode: string;
+
+  //#region  contact info
+  @ApiProperty({ example: 'Ukraine', description: 'country' })
+  @IsOptional()
+  readonly country: string;
+
+  @ApiProperty({ example: 'PA', description: 'region' })
+  @IsOptional()
+  readonly region: string;
+
+  @ApiProperty({ example: 'Kyiv', description: 'city' })
+  @IsOptional()
+  readonly city: string;
+
+  @ApiProperty({ example: 'Market street', description: 'street' })
+  @IsOptional()
+  @IsString({ message: 'street must be filled' })
+  @Length(3, 55, {
+    message: 'address must be at least 3 and not longer than 55 characters',
+  })
+  readonly street: string;
+  @ApiProperty({ example: '22', description: 'building' })
+  @IsOptional()
+  readonly house: string;
+  @ApiProperty({ example: '#171', description: 'apartment' })
+  @IsOptional()
+  readonly apartment: string;
+  //#endregion
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
   @IsOptional({ each: true })
