@@ -87,6 +87,9 @@ export class UserDto {
   @IsOptional()
   readonly apartment: string;
   //#endregion
+  @ApiProperty({ example: '5', description: 'userId' })
+  @IsOptional()
+  readonly userId: number;
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
   @IsOptional({ each: true })

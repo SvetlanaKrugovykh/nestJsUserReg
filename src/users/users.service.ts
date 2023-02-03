@@ -255,6 +255,10 @@ export class UsersService {
     return address;
   }
 
+  async deleteAddress(userDto: any) {
+    const address = await this.addressesService.deleteAddress(userDto);
+    return address;
+  }
   async getAddresses(userDto: any) {
     const user = await this.findUser(userDto);
     if (!user) {

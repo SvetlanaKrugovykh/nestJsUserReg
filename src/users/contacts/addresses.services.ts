@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UserDto } from '../dto/user.dto';
 import { User } from '../users.model';
@@ -24,6 +28,30 @@ export class AddressesService {
         include: { all: true },
       });
       return addresses;
+    } catch (e) {
+      throw new UnauthorizedException({
+        message: e.message,
+      });
+    }
+  }
+  public async deleteAddress(userDto: UserDto) {
+    try {
+      const address = await this.addressRepository.findOne({
+        where: {
+          userId: Number(userDto.userId),
+          street: userDto.street,
+          house: userDto.house,
+          apartment: userDto.apartment,
+        },
+      });
+      if (!address) {
+        throw new NotFoundException({
+          message: 'Address not found',
+        });
+      }
+      const addressID = address.id;
+      await this.addressRepository.destroy({ where: { id: addressID } });
+      return { message: 'Address deleted successfully' };
     } catch (e) {
       throw new UnauthorizedException({
         message: e.message,

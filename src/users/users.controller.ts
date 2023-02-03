@@ -23,4 +23,11 @@ export class UsersController {
   getAddresses(@Body() userDto: UserDto) {
     return this.usersService.getAddresses(userDto);
   }
+
+  @ApiOperation({ summary: 'Get addresses' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/delete-address')
+  deleteAddres(@Body() userDto: UserDto) {
+    return this.usersService.deleteAddress(userDto);
+  }
 }
