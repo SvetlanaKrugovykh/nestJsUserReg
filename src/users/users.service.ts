@@ -21,29 +21,34 @@ export class UsersService {
     private addressesService: AddressesService,
   ) {}
 
+  async generateCustomerId(): Promise<string> {
+    const timestamp = new Date().getTime().toString();
+    const randomNumber = Math.floor(Math.random() * 1000000).toString();
+    return `${timestamp}${randomNumber}`;
+  }
+
+  async getUserById(id: number) {
+    const user = await this.userRepository.findByPk(id, {
+      include: { all: true },
+    });
+    return user;
+  }
+
+  async getUserByOneProp(prop: string, value: string) {
+    const user = await this.userRepository.findOne({
+      where: { [prop]: value },
+      include: { all: true },
+    });
+    return user;
+  }
+
   async findUser(userDto: UserDto) {
     let user;
     if (userDto.email) {
-      user = await this.getUserByEmail(userDto.email);
+      user = await this.getUserByOneProp('email', userDto.email);
     } else if (userDto.phoneNumber) {
-      user = await this.getUserByPhoneNumber(userDto.phoneNumber);
+      user = await this.getUserByOneProp('phoneNumber', userDto.phoneNumber);
     }
-    return user;
-  }
-
-  async getUserByEmail(email: string) {
-    const user = await this.userRepository.findOne({
-      where: { email },
-      include: { all: true },
-    });
-    return user;
-  }
-
-  async getUserByPhoneNumber(phoneNumber: string) {
-    const user = await this.userRepository.findOne({
-      where: { phoneNumber },
-      include: { all: true },
-    });
     return user;
   }
 

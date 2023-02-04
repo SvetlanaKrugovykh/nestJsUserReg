@@ -12,8 +12,6 @@ export class SubscriptionsController {
   @ApiResponse({ status: 200, type: ProductDto })
   @Post('/add-price')
   createPrice(@Body() productDto: ProductDto) {
-		const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-		console.log(STRIPE_SECRET_KEY);
-    return this.subscriptionsService.createPrice(productDto,STRIPE_SECRET_KEY);
+    return this.subscriptionsService.createPrice(productDto);
   }
 }

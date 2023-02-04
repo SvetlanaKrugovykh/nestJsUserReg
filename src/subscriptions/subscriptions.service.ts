@@ -4,21 +4,23 @@ import Stripe from 'stripe';
 
 @Injectable()
 export class SubscriptionsService {
-  constructor(private productDto: ProductDto) {}
+  private stripe: Stripe;
 
-  async createPrice(productDto: ProductDto, STRIPE_SECRET_KEY: string) {
-    const stripe = new Stripe(STRIPE_SECRET_KEY, {
+  constructor(private productDto: ProductDto) {
+    const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+    this.stripe = new Stripe(STRIPE_SECRET_KEY, {
       apiVersion: '2022-11-15',
     });
+  }
 
-    console.log('STRIPE_SECRET_KEY: ', STRIPE_SECRET_KEY);
-    stripe.products
+  async createPrice(productDto: ProductDto) {
+    await this.stripe.products
       .create({
-        name: 'Subscription for Internet Service Provider',
-        description: 'subscription for internet service provider',
+        name: productDto.name,
+        description: productDto.description,
       })
-      .then((product) => {
-        stripe.prices
+      .then(async (product) => {
+        await this.stripe.prices
           .create({
             unit_amount: productDto.unit_amount,
             currency: productDto.currency,
@@ -30,7 +32,7 @@ export class SubscriptionsService {
           .then((price) => {
             console.log(
               'Success! Here is your starter subscription product id: ' +
-                productDto.id,
+                product.id,
             );
             console.log(
               'Success! Here is your premium subscription price id: ' +
@@ -38,6 +40,12 @@ export class SubscriptionsService {
             );
           });
       });
+
     return productDto;
   }
+
+	async createProductIntoDB(productDto: ProductDto) {
+		const product = await this.productModel.create(productDto);
+		return product;
+	}	
 }
