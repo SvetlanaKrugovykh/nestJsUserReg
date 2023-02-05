@@ -27,6 +27,16 @@ export class UsersService {
     return `${timestamp}${randomNumber}`;
   }
 
+  async createUserCustomerId(user: User) {
+    if (user.customerId) {
+      return user;
+    }
+    const customerId = await this.generateCustomerId();
+    user.customerId = customerId;
+    await user.save();
+    return user;
+  }
+
   async getUserById(id: number) {
     const user = await this.userRepository.findByPk(id, {
       include: { all: true },
@@ -271,5 +281,20 @@ export class UsersService {
     }
     const addresses = await this.addressesService.getAddresses(userDto, user);
     return addresses;
+  }
+
+  async getcustomerDto(userDto: any) {
+    const user = await this.findUser(userDto);
+    if (!user) {
+      throw new UnauthorizedException({ message: 'User does not exist' });
+    }
+    await this.createUserCustomerId(user);
+    const addresses = await this.addressesService.getAddresses(userDto, user);
+    const customerDto = {
+      id: user.customerId,
+      description: `Customer ${user.email}`,
+      email: user.email,
+    };
+    return customerDto;
   }
 }

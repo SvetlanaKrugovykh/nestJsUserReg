@@ -90,10 +90,10 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @ApiProperty({ example: 'unique ID', description: 'Customer id - unique ID' })
   @Column({
-    type: DataType.DATE,
+    type: DataType.STRING,
     allowNull: true,
   })
-  CustomerId: string;
+  customerId: string;
 }
 
 //`␍` should be stayed but prittier does not rematk it

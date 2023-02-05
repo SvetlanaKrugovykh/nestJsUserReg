@@ -32,9 +32,20 @@ export class Product extends Model<Product> {
   })
   description: string;
 
-  @ApiProperty({ example: 'xxx', description: 'City code' })
+  @ApiProperty({
+    example: 'product Id in Stripe',
+    description: 'The product Id in Stripe',
+  })
   @Column({
     type: DataType.STRING,
+    allowNull: true,
+    unique: true,
+  })
+  extProductId: string;
+
+  @ApiProperty({ example: 'xxx', description: 'City code' })
+  @Column({
+    type: DataType.BOOLEAN,
   })
   registeredInStripe: boolean;
 }

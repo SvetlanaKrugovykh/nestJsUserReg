@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber } from 'class-validator';
 import {
   Column,
   DataType,
@@ -24,15 +25,16 @@ export class Price extends Model<Price> {
     description: 'The description of price',
   })
   @ForeignKey(() => Product)
+  @IsNumber()
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    type: DataType.INTEGER,
+    allowNull: true,
   })
   productId: number;
 
   @ApiProperty({ example: '100', description: 'Price of the product' })
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   })
   unit_amount: number;
@@ -42,8 +44,8 @@ export class Price extends Model<Price> {
     description: 'Another price of the product for category 1',
   })
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    type: DataType.INTEGER,
+    allowNull: true,
   })
   unit_amount_category1: number;
 
@@ -63,7 +65,7 @@ export class Price extends Model<Price> {
 
   @ApiProperty({ example: 'xxx', description: 'City code' })
   @Column({
-    type: DataType.STRING,
+    type: DataType.BOOLEAN,
   })
   registeredInStripe: boolean;
 
@@ -78,4 +80,15 @@ export class Price extends Model<Price> {
     type: DataType.STRING,
   })
   finishedAt: Date;
+
+  @ApiProperty({
+    example: 'price Id in Stripe',
+    description: 'The price Id in Stripe',
+  })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    unique: true,
+  })
+  extPriceId: string;
 }

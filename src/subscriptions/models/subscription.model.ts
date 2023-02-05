@@ -7,6 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { Product } from './product.model';
+import { Price } from './price.model';
 import { User } from '../../users/users.model';
 
 @Table({ tableName: 'subscriptions', createdAt: false, updatedAt: false })
@@ -26,8 +27,8 @@ export class Subscription extends Model<Subscription> {
   })
   @ForeignKey(() => Product)
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
+    type: DataType.INTEGER,
+    allowNull: true,
   })
   productId: number;
 
@@ -35,9 +36,20 @@ export class Subscription extends Model<Subscription> {
     example: 'Unlimit Internet 30Mbps for a month',
     description: 'The description of price',
   })
+  @ForeignKey(() => Price)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  priceId: number;
+
+  @ApiProperty({
+    example: 'Unlimit Internet 30Mbps for a month',
+    description: 'The description of price',
+  })
   @ForeignKey(() => User)
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   })
   userId: number;
@@ -86,4 +98,15 @@ export class Subscription extends Model<Subscription> {
     type: DataType.STRING,
   })
   finishedAt: Date;
+
+  @ApiProperty({
+    example: 'Subscription Id in Stripe',
+    description: 'The Subscription Id in Stripe',
+  })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    unique: true,
+  })
+  extSubscriptionId: string;
 }

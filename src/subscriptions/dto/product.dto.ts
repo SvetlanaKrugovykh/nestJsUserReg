@@ -23,4 +23,10 @@ export class ProductDto {
   readonly interval: string;
   readonly startedAt: Date;
   readonly finishedAt: Date;
+  productId: number;
+  priceId: number;
+  userId: number;
+  email: string;
+  extPpriceId: string;
+  customer: string;
 }
