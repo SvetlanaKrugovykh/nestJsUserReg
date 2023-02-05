@@ -4,6 +4,7 @@ import { ProductDto, Interval } from './dto/product.dto';
 import { Product } from './models/product.model';
 import { Subscription } from './models/subscription.model';
 import { Price } from './models/price.model';
+import { Paymethods } from './models/paymethods.model';
 import { UserDto } from '../users/dto/user.dto';
 import { UsersService } from '../users/users.service';
 import Stripe from 'stripe';
@@ -16,6 +17,7 @@ export class SubscriptionsService {
   constructor(
     @InjectModel(Product) private productRepository: typeof Product,
     @InjectModel(Price) private priceRepository: typeof Price,
+    @InjectModel(Paymethods) private paymethodsRepository: typeof Paymethods,
     @InjectModel(Subscription)
     private subscriptionRepository: typeof Subscription,
     private userService: UsersService,
@@ -35,6 +37,28 @@ export class SubscriptionsService {
     return customer;
   }
 
+  async setCustomerPaymentMethod(userDto: UserDto) {
+    const paymentMethod = await this.stripe.paymentMethods.create({
+      type: 'card',
+      card: {
+        number: '4242424242424242',
+        exp_month: 8,
+        exp_year: 2027,
+        cvc: '314',
+      },
+    });
+    const customerDto = await this.userService.getcustomerDto(userDto);
+    const paymethods = await this.paymethodsRepository.create(userDto);
+    paymethods.extPaymethodsId = paymentMethod.id;
+    paymethods.customerId = customerDto.id;
+    paymethods.save();
+    const assugnPayMethod = await this.stripe.paymentMethods.attach(
+      paymentMethod.id,
+      { customer: customerDto.id },
+    );
+    return paymentMethod;
+  }
+
   async subscriptionCreate(productDto: ProductDto) {
     const user = await this.userService.getUserByOneProp(
       'email',
@@ -46,11 +70,16 @@ export class SubscriptionsService {
     const localSubscription = await this.createLocalSubscription(productDto);
     if (!user.customerId) throw new Error('Customer not found');
     const price = await this.getPriceByProductName('name', productDto.name);
+    const paymethod = await this.paymethodsRepository.findOne({
+      where: { ['customerId']: user.customerId },
+      include: { all: true },
+    });
+    const extPaymethodsId = paymethod.extPaymethodsId;
+
     const subscription = await this.stripe.subscriptions.create({
       customer: user.customerId,
       currency: productDto.currency,
-      collection_method: 'charge_automatically',
-      payment_behavior: 'allow_incomplete' || 'default_incomplete',
+      default_payment_method: extPaymethodsId,
       items: [{ price: price.extPriceId }],
     });
     localSubscription.extSubscriptionId = subscription.id;
