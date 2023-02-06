@@ -29,4 +29,6 @@ export class ProductDto {
   email: string;
   extPpriceId: string;
   customer: string;
+  returnUrl: string;
+  paymentIntentId: string;
 }

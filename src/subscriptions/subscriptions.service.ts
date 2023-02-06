@@ -132,6 +132,99 @@ export class SubscriptionsService {
     return productDto;
   }
 
+  async chargePayment(productDto: ProductDto) {
+    try {
+      const customerDto = await this.userService.getcustomerDto(productDto);
+      const paymentMethod = await this.paymethodsRepository.findOne({
+        where: { ['customerId']: customerDto.id },
+        include: { all: true },
+      });
+      const paymentMethodId = paymentMethod.extPaymethodsId;
+
+      await this.getPaymentMethod(paymentMethodId);
+      const paymentIntent = await this.createPaymentIntent(
+        productDto,
+        customerDto.id,
+        paymentMethodId,
+      );
+      paymentIntent.source = '???';
+      const chargeIntent = await this.stripe.charges.create(paymentIntent);
+      return chargeIntent;
+    } catch (error) {
+      console.log(error);
+      throw new Error(`Stripe error: ${error.message}`);
+    }
+  }
+
+  async getPaymentMethod(paymentMethodId: string) {
+    try {
+      const paymentMethod = await this.stripe.paymentMethods.retrieve(
+        paymentMethodId,
+      );
+      return paymentMethod;
+    } catch (error) {
+      throw new Error(`Stripe error: ${error.message}`);
+    }
+  }
+
+  async createPaymentIntent(
+    productDto: ProductDto,
+    customerDtoId: string,
+    paymentMethodId: string,
+  ) {
+    try {
+      const paymentIntent = await this.stripe.paymentIntents.create({
+        amount: productDto.unit_amount,
+        currency: productDto.currency,
+        payment_method_types: ['card'],
+        payment_method: paymentMethodId,
+        receipt_email: productDto.email,
+        customer: customerDtoId,
+      });
+      return paymentIntent;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  }
+
+  async confirmPaymentIntent(paymentIntentId: string) {
+    try {
+      const paymentIntent = await this.stripe.paymentIntents.confirm(
+        paymentIntentId,
+        {
+          payment_method: 'pm_card_visa',
+        },
+      );
+      return paymentIntent;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  }
+
+  async doProcessPayment(productDto: ProductDto) {
+    const customerDto = await this.userService.getcustomerDto(productDto);
+    const paymentMethod = await this.paymethodsRepository.findOne({
+      where: { ['customerId']: customerDto.id },
+      include: { all: true },
+    });
+    const paymentMethodId = paymentMethod.extPaymethodsId;
+
+    await this.getPaymentMethod(paymentMethodId);
+    const paymentIntent = await this.createPaymentIntent(
+      productDto,
+      customerDto.id,
+      paymentMethodId,
+    );
+
+    const confirmPaymentIntent = await this.confirmPaymentIntent(
+      paymentIntent.id,
+    );
+    return confirmPaymentIntent;
+  }
+
+  //#region LocaDB
   async createLocalProduct(productDto: ProductDto) {
     const existingProduct = await this.productRepository.findOne({
       where: { name: productDto.name },
@@ -201,4 +294,12 @@ export class SubscriptionsService {
       throw new Error('Local product not found');
     }
   }
+  //#endregion
+
+#region googleApiTest
+async googleApiTest(productDto: ProductDto) {
+	
+} 
+#endRegion
+
 }

@@ -23,6 +23,13 @@ export class SubscriptionsController {
     return this.subscriptionsService.customerRegistration(userDto);
   }
 
+  @ApiOperation({ summary: 'Subscription creating' })
+  @ApiResponse({ status: 200, type: ProductDto })
+  @Post('/subscription-create')
+  subscriptionCreate(@Body() productDto: ProductDto) {
+    return this.subscriptionsService.subscriptionCreate(productDto);
+  }
+
   @ApiOperation({ summary: 'Set customer payment method' })
   @ApiResponse({ status: 200, type: UserDto })
   @Post('/set-customer-payment-method')
@@ -30,10 +37,22 @@ export class SubscriptionsController {
     return this.subscriptionsService.setCustomerPaymentMethod(userDto);
   }
 
-  @ApiOperation({ summary: 'Subscription creating' })
+  @ApiOperation({ summary: 'Set customer payment method' })
   @ApiResponse({ status: 200, type: ProductDto })
-  @Post('/subscription-create')
-  subscriptionCreate(@Body() productDto: ProductDto) {
-    return this.subscriptionsService.subscriptionCreate(productDto);
+  @Post('/charge')
+  chargePayment(@Body() productDto: ProductDto) {
+    return this.subscriptionsService.chargePayment(productDto);
+  }
+
+  @ApiOperation({ summary: 'Set customer payment method' })
+  @ApiResponse({ status: 200, type: ProductDto })
+  @Post('/process-payment')
+  doProcessPayment(@Body() productDto: ProductDto) {
+    return this.subscriptionsService.doProcessPayment(productDto);
+  }
+
+  @Post('/google-api-test')
+  googleApiTest(@Body() productDto: ProductDto) {
+    return this.subscriptionsService.googleApiTest(productDto);
   }
 }
