@@ -9,6 +9,7 @@ import { UserDto } from '../users/dto/user.dto';
 import { UsersService } from '../users/users.service';
 import Stripe from 'stripe';
 import { User } from 'src/users/users.model';
+import { CalendarService } from 'src/common/google.api/reminder';
 
 @Injectable()
 export class SubscriptionsService {
@@ -22,6 +23,7 @@ export class SubscriptionsService {
     private subscriptionRepository: typeof Subscription,
     private userService: UsersService,
     private productDto: ProductDto,
+    private calendarService: CalendarService,
   ) {
     const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
     const STRIPE_API_VERSION = process.env.STRIPE_API_VERSION;
@@ -296,10 +298,12 @@ export class SubscriptionsService {
   }
   //#endregion
 
-#region googleApiTest
-async googleApiTest(productDto: ProductDto) {
-	
-} 
-#endRegion
-
+  async googleApiTest(productDto: ProductDto) {
+    const reminder = this.calendarService.addPaymentReminderEvent(
+      productDto.name,
+      productDto.email,
+      productDto.nextPaymentDate,
+    );
+    return reminder;
+  }
 }

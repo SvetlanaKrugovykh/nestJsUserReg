@@ -31,4 +31,5 @@ export class ProductDto {
   customer: string;
   returnUrl: string;
   paymentIntentId: string;
+  nextPaymentDate: Date;
 }

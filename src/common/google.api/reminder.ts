@@ -1,66 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { google } from 'googleapis';
 
-const OAuth2 = google.auth.OAuth2;
-
-const CLIENT_ID = '   ';
-const CLIENT_SECRET = '   ';
-const REDIRECT_URI = '   ';
-
-const oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-
-const authUrl = oauth2Client.generateAuthUrl({
-  access_type: 'offline',
-  scope: [
-    'https://www.googleapis.com/auth/calendar',
-    'https://www.googleapis.com/auth/gmail.readonly',
-  ],
-});
-
-// Redirect the user to the authorization URL
-
-// After the user grants permission, the authorization server will redirect the user back to your application with an authorization code
-const code = '   '; // extract the authorization code from the URL query parameters
-
-oauth2Client.getToken(code, (err, tokens) => {
-  if (err) {
-    console.error('Error obtaining access token', err);
-    return;
-  }
-
-  // Store the tokens securely for future use
-  oauth2Client.setCredentials(tokens);
-
-  // Use the authenticated client to access the Google Calendar and Gmail APIs
-  const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-  const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-
-  // ...
-});
-
 @Injectable()
 export class CalendarService {
   private calendar: any;
   private gmail: any;
+  private oauth2Client: any;
 
-  constructor(AUTH_CLIENT) {
-    this.calendar = google.calendar({ version: 'v3', auth: AUTH_CLIENT });
-    this.gmail = google.gmail({ version: 'v1', auth: AUTH_CLIENT });
+  constructor() {
+    this.oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URL,
+    );
+
+    this.calendar = google.calendar({ version: 'v3', auth: this.oauth2Client });
+    this.gmail = google.gmail({ version: 'v1', auth: this.oauth2Client });
   }
 
-  async addPaymentReminderEvent(customerName: string, customerEmail: string) {
-    const date = new Date();
-    date.setDate(date.getDate() + 1);
-
+  async addPaymentReminderEvent(
+    customerName: string,
+    customerEmail: string,
+    nextPaymentDateString: Date,
+  ) {
+    const nextPaymentDate = new Date(nextPaymentDateString);
+    const nextPaymentDateFinish = new Date(nextPaymentDate.getTime() + 2000);
     const event = {
       summary: `Payment Reminder for ${customerName}`,
       description: 'Reminder to make a payment from the balance',
       start: {
-        dateTime: date.toISOString(),
+        dateTime: nextPaymentDate.toISOString(),
         timeZone: 'America/Los_Angeles',
       },
       end: {
-        dateTime: date.toISOString(),
+        dateTime: nextPaymentDateFinish.toISOString(),
         timeZone: 'America/Los_Angeles',
       },
       reminders: {
@@ -82,7 +55,7 @@ export class CalendarService {
       const email = {
         to: customerEmail,
         subject: `Payment Reminder for ${customerName}`,
-        html: `<p>This is a reminder to make a payment from the balance on ${date.toDateString()}.</p>`,
+        html: `<p>This is a reminder to make a payment from the balance on ${nextPaymentDate.toDateString()}.</p>`,
       };
 
       const emailResult = await this.gmail.users.messages.send({

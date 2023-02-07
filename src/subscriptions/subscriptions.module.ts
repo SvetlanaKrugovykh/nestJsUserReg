@@ -8,9 +8,10 @@ import { Price } from './models/price.model';
 import { Subscription } from './models/subscription.model';
 import { UsersModule } from 'src/users/users.module';
 import { Paymethods } from './models/paymethods.model';
+import { CalendarService } from 'src/common/google.api/reminder';
 
 @Module({
-  providers: [SubscriptionsService, ProductDto],
+  providers: [SubscriptionsService, CalendarService, ProductDto],
   controllers: [SubscriptionsController],
   imports: [
     forwardRef(() => UsersModule),
