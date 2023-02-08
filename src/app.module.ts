@@ -7,6 +7,7 @@ import { User } from './users/users.model';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { ThirdPartyServicesModule } from './third-party-services/third-party-services.module';
 
 @Module({
   controllers: [AppController],
@@ -26,6 +27,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     UsersModule,
     AuthModule,
     SubscriptionsModule,
+    ThirdPartyServicesModule,
   ],
 })
 export class AppModule {

@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/sequelize": "^9.0.0",
     "@nestjs/swagger": "^6.1.4",
+    "aws-sdk": "^2.1310.0",
     "bcryptjs": "^2.4.3",
     "cross-env": "^7.0.3",
     "googleapis": "^110.0.0",
