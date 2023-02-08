@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller, Post, Body, Headers } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ThirdPartyService } from './third-party-services.service';
 import { Buffer } from 'buffer';
@@ -11,32 +11,41 @@ export class ThirdPartyServicesController {
   @ApiOperation({ summary: 'Get avatar from the bucket' })
   @ApiResponse({ status: 200, type: '' })
   @Post('/get')
-  async getAvatar(@Body() body: any): Promise<any> {
-    const key = 'DSC_0070-1.jpg';
+  async getAvatar(@Body() key): Promise<any> {
     return await this.thirdPartyService.getAvatar(key);
   }
 
   @ApiOperation({ summary: 'Upload to the bucket' })
   @ApiResponse({ status: 200, type: '' })
   @Post('/upload')
-  async uploadAvatar(@Body() body: any): Promise<any> {
+  async uploadAvatar(@Headers() headers: any, @Body() body: any) {
+    let key = '';
     const buffer = Buffer.from(JSON.stringify(body));
-    const key = 'DSC_0070-2.jpg';
+    if (headers['content-type'] === 'image/jpeg') {
+      key = headers.key;
+    } else {
+      throw new Error('Invalid file type');
+    }
     return await this.thirdPartyService.uploadAvatar(buffer, key);
   }
 
   @ApiOperation({ summary: 'Remove from the bucket' })
   @ApiResponse({ status: 200, type: '' })
   @Post('/remove')
-  async removeAvatar(@Body() key: string): Promise<any> {
-    return await this.thirdPartyService.removeAvatar(key);
+  async removeAvatar(@Body() body: any): Promise<any> {
+    return await this.thirdPartyService.removeAvatar(body.key);
   }
   @ApiOperation({ summary: 'Update to the bucket' })
   @ApiResponse({ status: 200, type: '' })
   @Post('/update')
-  async updateAvatar(@Body() body: any): Promise<any> {
+  async updateAvatar(@Headers() headers: any, @Body() body: any) {
+    let key = '';
     const buffer = Buffer.from(JSON.stringify(body));
-    const key = 'DSC_0070-1.jpg';
+    if (headers['content-type'] === 'image/jpeg') {
+      key = headers.key;
+    } else {
+      throw new Error('Invalid file type');
+    }
     return await this.thirdPartyService.updateAvatar(buffer, key);
   }
 }
