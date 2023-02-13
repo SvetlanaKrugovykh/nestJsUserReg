@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProductDto } from './dto/product.dto';
 import { SubscriptionsService } from './subscriptions.service';
@@ -51,8 +51,22 @@ export class SubscriptionsController {
     return this.subscriptionsService.doProcessPayment(productDto);
   }
 
+  @ApiOperation({ summary: 'Get distance between users addresses' })
+  @ApiResponse({ status: 200, type: ProductDto })
+  @Get('/get-distance')
+  findAll(@Req() request: any) {
+    return this.subscriptionsService.getDistance(
+      Number(request.query.user1),
+      Number(request.query.user2),
+    );
+  }
+
   @Post('/google-api-test')
   googleApiTest(@Body() productDto: ProductDto) {
     return this.subscriptionsService.googleApiTest(productDto);
+  }
+  @Post('/callback')
+  googleСallback(@Body() body: any) {
+    return this.subscriptionsService.googleСallback(body);
   }
 }

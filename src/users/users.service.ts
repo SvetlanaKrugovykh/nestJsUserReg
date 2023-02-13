@@ -21,6 +21,14 @@ export class UsersService {
     private addressesService: AddressesService,
   ) {}
 
+  async executeQuery(query: string, parameters: Array<string>): Promise<any[]> {
+    for (let i = 0; i < parameters.length; i++) {
+      query = query.replace(`$${i + 1}`, parameters[i]);
+    }
+    const result = await this.userRepository.sequelize.query(query, {});
+    return result;
+  }
+
   async generateCustomerId(): Promise<string> {
     const timestamp = new Date().getTime().toString();
     const randomNumber = Math.floor(Math.random() * 1000000).toString();

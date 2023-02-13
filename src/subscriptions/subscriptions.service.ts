@@ -10,6 +10,8 @@ import { UsersService } from '../users/users.service';
 import Stripe from 'stripe';
 import { User } from 'src/users/users.model';
 import { CalendarService } from 'src/common/google.api/reminder';
+import { MapsService } from 'src/common/google.api/maps';
+import { getUserInfoRequest } from '../users/db/requests';
 
 @Injectable()
 export class SubscriptionsService {
@@ -24,6 +26,7 @@ export class SubscriptionsService {
     private userService: UsersService,
     private productDto: ProductDto,
     private calendarService: CalendarService,
+    private mapsService: MapsService,
   ) {
     const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
     const STRIPE_API_VERSION = process.env.STRIPE_API_VERSION;
@@ -298,11 +301,35 @@ export class SubscriptionsService {
   }
   //#endregion
 
+  async getDistance(id1: number, id2: number) {
+    const addresses1: any = await this.userService.executeQuery(
+      getUserInfoRequest,
+      [id1.toString()],
+    );
+    const addresses2: any = await this.userService.executeQuery(
+      getUserInfoRequest,
+      [id2.toString()],
+    );
+    if (addresses1 && addresses2) {
+      const user1 = addresses1[0][0];
+      const user2 = addresses2[0][0];
+      if (user1 && user2) {
+        const address1 = `${user1.country_name}, ${user1.city_name}, ${user1.street}, ${user1.house}`;
+        const address2 = `${user2.country_name}, ${user2.city_name}, ${user2.street}, ${user2.house}`;
+        const distance = await this.mapsService.calculateDistance(
+          address1,
+          address2,
+        );
+        return `The distance between the ${address1} anf ${address2} in meters is: ${distance}`;
+      }
+    }
+    return 'Error: Wrong id';
+  }
+
   async googleApiTest(productDto: ProductDto) {
     const reminder = this.calendarService.addPaymentReminderEvent(
       productDto.name,
       productDto.email,
-      productDto.nextPaymentDate,
     );
     return reminder;
   }
