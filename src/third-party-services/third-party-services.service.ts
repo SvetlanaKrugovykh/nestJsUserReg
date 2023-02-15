@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
+import { ConvertService } from '../common/converters/converter';
 
 @Injectable()
 export class ThirdPartyService {
   private readonly s3: AWS.S3;
   private readonly AWS_S3_BUCKET: string;
 
-  constructor() {
+  constructor(private convertService: ConvertService) {
     this.AWS_S3_BUCKET = process.env.AWS_S3_BUCKET;
     this.s3 = new AWS.S3({
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -50,5 +51,13 @@ export class ThirdPartyService {
   ): Promise<AWS.S3.ManagedUpload.SendData> {
     await this.removeAvatar(key);
     return this.uploadAvatar(buffer, key);
+  }
+
+  async formatConverter(body) {
+    const pdfDocBuffer = await this.convertService.generatePdfFromHtml(
+      body.url,
+      body.type,
+    );
+    return pdfDocBuffer;
   }
 }

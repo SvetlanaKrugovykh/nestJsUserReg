@@ -1,7 +1,10 @@
-import { Controller, Post, Body, Headers } from '@nestjs/common';
+import { Controller, Post, Body, Headers, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ThirdPartyService } from './third-party-services.service';
 import { Buffer } from 'buffer';
+import { writeFile } from 'fs/promises';
+import { uuid } from 'uuidv4';
 
 @ApiTags('third-party-services')
 @Controller('third-party-services')
@@ -35,6 +38,7 @@ export class ThirdPartyServicesController {
   async removeAvatar(@Body() body: any): Promise<any> {
     return await this.thirdPartyService.removeAvatar(body.key);
   }
+
   @ApiOperation({ summary: 'Update to the bucket' })
   @ApiResponse({ status: 200, type: '' })
   @Post('/update')
@@ -47,5 +51,15 @@ export class ThirdPartyServicesController {
       throw new Error('Invalid file type');
     }
     return await this.thirdPartyService.updateAvatar(buffer, key);
+  }
+
+  @ApiOperation({ summary: 'Converter for example html to pdf' })
+  @ApiResponse({ status: 200, type: '' })
+  @Post('/converter')
+  async formatConverter(@Body() body: any, @Res() res: Response): Promise<any> {
+    const pdfBuffer = await this.thirdPartyService.formatConverter(body);
+    const tempPdfFilePath = 'temp/' + uuid() + '.pdf';
+    await writeFile(tempPdfFilePath, pdfBuffer);
+    res.sendFile(tempPdfFilePath, { root: '.' });
   }
 }
