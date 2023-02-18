@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProductDto } from './dto/product.dto';
 import { SubscriptionsService } from './subscriptions.service';
 import { UserDto } from '../users/dto/user.dto';
+import { RoleMiddleware } from 'src/middleware/roles';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
@@ -26,6 +27,7 @@ export class SubscriptionsController {
   @ApiOperation({ summary: 'Subscription creating' })
   @ApiResponse({ status: 200, type: ProductDto })
   @Post('/subscription-create')
+  @UseGuards(RoleMiddleware)
   subscriptionCreate(@Body() productDto: ProductDto) {
     return this.subscriptionsService.subscriptionCreate(productDto);
   }
@@ -37,14 +39,14 @@ export class SubscriptionsController {
     return this.subscriptionsService.setCustomerPaymentMethod(userDto);
   }
 
-  @ApiOperation({ summary: 'Set customer payment method' })
+  @ApiOperation({ summary: 'Charge payment method' })
   @ApiResponse({ status: 200, type: ProductDto })
   @Post('/charge')
   chargePayment(@Body() productDto: ProductDto) {
     return this.subscriptionsService.chargePayment(productDto);
   }
 
-  @ApiOperation({ summary: 'Set customer payment method' })
+  @ApiOperation({ summary: 'Do payment' })
   @ApiResponse({ status: 200, type: ProductDto })
   @Post('/process-payment')
   doProcessPayment(@Body() productDto: ProductDto) {

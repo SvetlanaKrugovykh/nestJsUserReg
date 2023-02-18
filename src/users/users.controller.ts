@@ -24,10 +24,17 @@ export class UsersController {
     return this.usersService.getAddresses(userDto);
   }
 
-  @ApiOperation({ summary: 'Get addresses' })
+  @ApiOperation({ summary: 'Delete addresses' })
   @ApiResponse({ status: 200, type: User })
   @Post('/delete-address')
   deleteAddres(@Body() userDto: UserDto) {
     return this.usersService.deleteAddress(userDto);
+  }
+
+  @ApiOperation({ summary: 'Add role' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('/add-role')
+  addRole(@Body() userDto: UserDto) {
+    return this.usersService.addRole(userDto);
   }
 }

@@ -12,6 +12,7 @@ import {
   sendVerificationSMS,
 } from 'src/common/sendouter';
 import { AddressesService } from './contacts/addresses.services';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +20,7 @@ export class UsersService {
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     private addressesService: AddressesService,
+    private rolesService: RolesService,
   ) {}
 
   async executeQuery(query: string, parameters: Array<string>): Promise<any[]> {
@@ -289,6 +291,15 @@ export class UsersService {
     }
     const addresses = await this.addressesService.getAddresses(userDto, user);
     return addresses;
+  }
+
+  async addRole(userDto: any) {
+    const user = await this.findUser(userDto);
+    if (!user) {
+      throw new UnauthorizedException({ message: 'User does not exist' });
+    }
+    const address = await this.rolesService.addRole(userDto, user);
+    return address;
   }
 
   async getcustomerDto(userDto: any) {

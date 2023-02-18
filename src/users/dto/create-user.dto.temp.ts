@@ -14,7 +14,6 @@ export class UserDto extends CreateDto {
     super(userProperties, userDto);
     const dto = new CreateDto(userProperties, userDto);
     Object.assign(this, dto);
-    console.log('івапівапівап', this);
   }
 
   @ApiModelProperty({

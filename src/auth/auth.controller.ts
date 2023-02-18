@@ -5,7 +5,6 @@ import {
   Post,
   UseGuards,
   Get,
-  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger/dist';
