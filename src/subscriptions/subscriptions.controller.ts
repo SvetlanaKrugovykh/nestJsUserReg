@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProductDto } from './dto/product.dto';
 import { SubscriptionsService } from './subscriptions.service';
 import { UserDto } from '../users/dto/user.dto';
-import { RoleMiddleware } from 'src/middleware/roles';
+import { RolesGuard } from 'src/auth/guards/roles.quard';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
@@ -27,7 +27,7 @@ export class SubscriptionsController {
   @ApiOperation({ summary: 'Subscription creating' })
   @ApiResponse({ status: 200, type: ProductDto })
   @Post('/subscription-create')
-  @UseGuards(RoleMiddleware)
+  @UseGuards(RolesGuard)
   subscriptionCreate(@Body() productDto: ProductDto) {
     return this.subscriptionsService.subscriptionCreate(productDto);
   }

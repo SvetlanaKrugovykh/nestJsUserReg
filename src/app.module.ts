@@ -11,6 +11,7 @@ import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { ThirdPartyServicesModule } from './third-party-services/third-party-services.module';
+import { ArticlesModule } from './articles/articles.module';
 
 @Module({
   controllers: [AppController],
@@ -32,6 +33,7 @@ import { ThirdPartyServicesModule } from './third-party-services/third-party-ser
     AuthModule,
     SubscriptionsModule,
     ThirdPartyServicesModule,
+    ArticlesModule,
   ],
 })
 export class AppModule {

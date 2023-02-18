@@ -308,7 +308,7 @@ export class UsersService {
       throw new UnauthorizedException({ message: 'User does not exist' });
     }
     await this.createUserCustomerId(user);
-    const addresses = await this.addressesService.getAddresses(userDto, user);
+    await this.addressesService.getAddresses(userDto, user);
     const customerDto = {
       id: user.customerId,
       description: `Customer ${user.email}`,
