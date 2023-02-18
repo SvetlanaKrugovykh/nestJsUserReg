@@ -4,7 +4,10 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users/users.model';
+import { Role } from './roles/roles.model';
 import { UsersModule } from './users/users.module';
+import { UserRoles } from './roles/user-roles.model';
+import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { ThirdPartyServicesModule } from './third-party-services/third-party-services.module';
@@ -21,10 +24,11 @@ import { ThirdPartyServicesModule } from './third-party-services/third-party-ser
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      models: [User],
+      models: [User, Role, UserRoles],
       autoLoadModels: true,
     }),
     UsersModule,
+    RolesModule,
     AuthModule,
     SubscriptionsModule,
     ThirdPartyServicesModule,
