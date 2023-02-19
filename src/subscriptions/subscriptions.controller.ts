@@ -53,6 +53,14 @@ export class SubscriptionsController {
     return this.subscriptionsService.doProcessPayment(productDto);
   }
 
+  @ApiOperation({ summary: 'Cancel a subscription' })
+  @ApiResponse({ status: 200, type: ProductDto })
+  @Post('/subscription-cancel')
+  @UseGuards(RolesGuard)
+  subscriptionCancel(@Body() productDto: ProductDto) {
+    return this.subscriptionsService.subscriptionCancel(productDto);
+  }
+
   @ApiOperation({ summary: 'Get distance between users addresses' })
   @ApiResponse({ status: 200, type: ProductDto })
   @Get('/get-distance')

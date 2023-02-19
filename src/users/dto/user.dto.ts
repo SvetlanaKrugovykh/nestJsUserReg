@@ -94,7 +94,8 @@ export class UserDto {
   @ApiProperty({ example: '5', description: 'userId' })
   @IsOptional()
   readonly userId: number;
-	static roleId: any;
+
+  static roleId: any;
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })
   @IsOptional({ each: true })

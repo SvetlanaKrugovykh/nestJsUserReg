@@ -11,7 +11,8 @@ import Stripe from 'stripe';
 import { User } from 'src/users/users.model';
 import { CalendarService } from 'src/common/google.api/reminder';
 import { MapsService } from 'src/common/google.api/maps';
-import { getUserInfoRequest } from '../users/db/requests';
+import { getUserInfoRequest } from '../common/db/requests';
+import { DatabaseService } from '../common/db/database.service';
 
 @Injectable()
 export class SubscriptionsService {
@@ -24,9 +25,9 @@ export class SubscriptionsService {
     @InjectModel(Subscription)
     private subscriptionRepository: typeof Subscription,
     private userService: UsersService,
-    private productDto: ProductDto,
     private calendarService: CalendarService,
     private mapsService: MapsService,
+    private databaseService: DatabaseService,
   ) {
     const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
     const STRIPE_API_VERSION = process.env.STRIPE_API_VERSION;
@@ -62,6 +63,12 @@ export class SubscriptionsService {
       { customer: customerDto.id },
     );
     return paymentMethod;
+  }
+
+  async subscriptionCancel(productDto: ProductDto) {
+    const subscriptionId = productDto['subscriptionId']; //not finished
+    const rezult = await this.stripe.subscriptions.del(subscriptionId);
+    return rezult;
   }
 
   async subscriptionCreate(productDto: ProductDto) {
@@ -302,17 +309,19 @@ export class SubscriptionsService {
   //#endregion
 
   async getDistance(id1: number, id2: number) {
-    const addresses1: any = await this.userService.executeQuery(
+    const addresses1: any = await this.databaseService.executeQuery(
       getUserInfoRequest,
+      'userRepository',
       [id1.toString()],
     );
-    const addresses2: any = await this.userService.executeQuery(
+    const addresses2: any = await this.databaseService.executeQuery(
       getUserInfoRequest,
+      'userRepository',
       [id2.toString()],
     );
     if (addresses1 && addresses2) {
-      const user1 = addresses1[0][0];
-      const user2 = addresses2[0][0];
+      const user1 = addresses1[0]; //temprpraly
+      const user2 = addresses2[0];
       if (user1 && user2) {
         const address1 = `${user1.country_name}, ${user1.city_name}, ${user1.street}, ${user1.house}`;
         const address2 = `${user2.country_name}, ${user2.city_name}, ${user2.street}, ${user2.house}`;

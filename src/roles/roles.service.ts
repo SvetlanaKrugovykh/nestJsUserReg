@@ -5,12 +5,15 @@ import { Role } from './roles.model';
 import { UserRoles } from './user-roles.model';
 import { UserDto } from 'src/users/dto/user.dto';
 import { User } from 'src/users/users.model';
+import { DatabaseService } from '../common/db/database.service';
+import { getRolesByUserId } from '../common/db/requests';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectModel(Role) private roleRepository: typeof Role,
-    @InjectModel(UserRoles) private UserRolesRepository: typeof UserRoles,
+    @InjectModel(UserRoles) private userRolesRepository: typeof UserRoles,
+    private databaseService: DatabaseService,
   ) {}
 
   async createRole(dto: CreateRoleDto) {
@@ -23,9 +26,18 @@ export class RolesService {
     return role;
   }
 
+  async getRoleNameByUserId(userId: string) {
+    const data: any = await this.databaseService.executeQuery(
+      getRolesByUserId,
+      'userRolesRepository',
+      [userId.toString()],
+    );
+    return data[0].role_value;
+  }
+
   async addRole(userDto: UserDto, user: User) {
     try {
-      const role = await this.UserRolesRepository.create({
+      const role = await this.userRolesRepository.create({
         roleId: UserDto.roleId,
         userId: user.id,
       });

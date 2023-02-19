@@ -10,13 +10,33 @@ import { UsersModule } from 'src/users/users.module';
 import { Paymethods } from './models/paymethods.model';
 import { CalendarService } from 'src/common/google.api/reminder';
 import { MapsService } from 'src/common/google.api/maps';
+import { RolesService } from 'src/roles/roles.service';
+import { User } from 'src/users/users.model';
+import { Role } from 'src/roles/roles.model';
+import { UserRoles } from 'src/roles/user-roles.model';
+import { DatabaseService } from 'src/common/db/database.service';
 
 @Module({
-  providers: [SubscriptionsService, CalendarService, MapsService, ProductDto],
+  providers: [
+    SubscriptionsService,
+    CalendarService,
+    MapsService,
+    ProductDto,
+    RolesService,
+    DatabaseService,
+  ],
   controllers: [SubscriptionsController],
   imports: [
     forwardRef(() => UsersModule),
-    SequelizeModule.forFeature([Product, Price, Subscription, Paymethods]),
+    SequelizeModule.forFeature([
+      Product,
+      Price,
+      User,
+      Subscription,
+      Paymethods,
+      Role,
+      UserRoles,
+    ]),
   ],
 })
 export class SubscriptionsModule {}

@@ -11,9 +11,10 @@ import { AddressesService } from './contacts/addresses.services';
 import { Role } from 'src/roles/roles.model';
 import { UserRoles } from 'src/roles/user-roles.model';
 import { RolesService } from 'src/roles/roles.service';
+import { DatabaseService } from 'src/common/db/database.service';
 
 @Module({
-  providers: [UsersService, AddressesService, RolesService],
+  providers: [UsersService, AddressesService, RolesService, DatabaseService],
   controllers: [UsersController],
   imports: [
     SequelizeModule.forFeature([
