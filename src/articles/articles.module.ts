@@ -2,12 +2,12 @@ import { forwardRef, Module } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { ArticlesController } from './articles.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Article } from './articles.model';
+import { Article } from '../common/db/models/articles.model';
 import { RolesService } from 'src/roles/roles.service';
-import { Role } from 'src/roles/roles.model';
-import { UserRoles } from 'src/roles/user-roles.model';
+import { Role } from 'src/common/db/models/roles.model';
+import { UserRoles } from 'src/common/db/models//user-roles.model';
 import { UsersModule } from 'src/users/users.module';
-import { User } from 'src/users/users.model';
+import { User } from 'src/common/db/models//users.model';
 import { DatabaseService } from 'src/common/db/database.service';
 
 @Module({

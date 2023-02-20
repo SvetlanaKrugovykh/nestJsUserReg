@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { Role } from './roles.model';
-import { UserRoles } from './user-roles.model';
+import { Role } from '../common/db/models/roles.model';
+import { UserRoles } from '../common/db/models/user-roles.model';
 import { UserDto } from 'src/users/dto/user.dto';
-import { User } from 'src/users/users.model';
+import { User } from '../common/db/models/users.model';
 import { DatabaseService } from '../common/db/database.service';
 import { getRolesByUserId } from '../common/db/requests';
 

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UserDto } from './dto/user.dto';
-import { User } from './users.model';
+import { User } from '../common/db/models/users.model';
 import * as bcrypt from 'bcryptjs';
 import {
   sendVerificationEmail,

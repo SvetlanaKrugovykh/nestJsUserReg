@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { UserDto } from '../dto/user.dto';
-import { User } from '../users.model';
-import { Country } from './countries.model';
-import { Region } from './regions.model';
-import { City } from './cities.model';
-import { Address } from './addresses.model';
+import { User } from '../../common/db/models/users.model';
+import { Country } from '../../common/db/models/contacts/countries.model';
+import { Region } from '../../common/db/models/contacts//regions.model';
+import { City } from '../../common/db/models/contacts//cities.model';
+import { Address } from '../../common/db/models/contacts/addresses.model';
 
 @Injectable()
 export class AddressesService {

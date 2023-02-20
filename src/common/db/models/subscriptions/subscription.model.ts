@@ -8,7 +8,7 @@ import {
 } from 'sequelize-typescript';
 import { Product } from './product.model';
 import { Price } from './price.model';
-import { User } from '../../users/users.model';
+import { User } from '../users.model';
 
 @Table({ tableName: 'subscriptions', createdAt: false, updatedAt: false })
 export class Subscription extends Model<Subscription> {

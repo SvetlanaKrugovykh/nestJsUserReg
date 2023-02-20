@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { QueryTypes } from 'sequelize';
-import { Role } from 'src/roles/roles.model';
-import { User } from 'src/users/users.model';
-import { UserRoles } from 'src/roles/user-roles.model';
+import { Role } from 'src/common/db/models/roles.model';
+import { User } from 'src/common/db/models/users.model';
+import { UserRoles } from 'src/common/db/models/user-roles.model';
 
 @Injectable()
 export class DatabaseService {

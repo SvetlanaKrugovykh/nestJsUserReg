@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Article } from './articles.model';
+import { Article } from '../common/db/models/articles.model';
 import { ArticleDto } from './dto/article.dto';
 import { RolesService } from 'src/roles/roles.service';
 @Injectable()

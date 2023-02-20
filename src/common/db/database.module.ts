@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { DatabaseService } from './database.service';
-import { User } from '../../users/users.model';
-import { Role } from '../../roles/roles.model';
-import { UserRoles } from '../../roles/user-roles.model';
+import { User } from 'src/common/db/models/users.model';
+import { Role } from './models/roles.model';
+import { UserRoles } from 'src/common/db/models/user-roles.model';
 
 @Module({
   providers: [DatabaseService],
