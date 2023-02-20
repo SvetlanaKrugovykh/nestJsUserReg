@@ -3,5 +3,5 @@ export class ArticleDto {
   readonly description: string;
   readonly body: string;
   readonly articleId: number;
-  readonly userId: number;
+  readonly jwttoken: string;
 }

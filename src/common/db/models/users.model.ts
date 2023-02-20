@@ -103,6 +103,20 @@ export class User extends Model<User, UserCreationAttrs> {
   })
   customerId: string;
 
+	@ApiProperty({ example: 'dsfsdfsdfds333e', description: 'jwttoken' })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  jwttoken: string;
+
+	@ApiProperty({ example: '01/02/2023 15:15:22', description: 'Token Ended at' })
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+  })
+  tokenDateEnd: Date;
+
   @BelongsToMany(() => Role, () => UserRoles)
   roles: Role[];
 }

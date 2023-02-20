@@ -95,6 +95,9 @@ export class UserDto {
   @IsOptional()
   readonly userId: number;
 
+  readonly jwttoken: string;
+  readonly tokenDateEnd: Date;
+
   static roleId: any;
 
   @IsNotEmpty({ message: 'At least one of email or phoneNumber is required' })

@@ -23,6 +23,7 @@ export class ProductDto {
   readonly interval: string;
   readonly startedAt: Date;
   readonly finishedAt: Date;
+  readonly jwttoken: string;
   productId: number;
   priceId: number;
   userId: number;

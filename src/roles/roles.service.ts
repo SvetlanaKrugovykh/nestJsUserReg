@@ -6,7 +6,7 @@ import { UserRoles } from '../common/db/models/user-roles.model';
 import { UserDto } from 'src/users/dto/user.dto';
 import { User } from '../common/db/models/users.model';
 import { DatabaseService } from '../common/db/database.service';
-import { getRolesByUserId } from '../common/db/requests';
+import { getRolesByUseId } from '../common/db/requests';
 
 @Injectable()
 export class RolesService {
@@ -26,11 +26,11 @@ export class RolesService {
     return role;
   }
 
-  async getRoleNameByUserId(userId: string) {
+  async getRoleNameByUserId(id: number) {
     const data: any = await this.databaseService.executeQuery(
-      getRolesByUserId,
+      getRolesByUseId,
       'userRolesRepository',
-      [userId.toString()],
+      [id.toString()],
     );
     return data[0].role_value;
   }

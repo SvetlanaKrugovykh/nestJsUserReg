@@ -46,6 +46,16 @@ export class UsersService {
     return user;
   }
 
+  async updateUserToken(id: number, token: string) {
+    const user = await this.userRepository.findByPk(id, {
+      include: { all: true },
+    });
+    user.jwttoken = token;
+    user.tokenDateEnd = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+    await user.save();
+    return user;
+  }
+
   async getUserByOneProp(prop: string, value: string) {
     const user = await this.userRepository.findOne({
       where: { [prop]: value },

@@ -13,8 +13,10 @@ FROM address
     LEFT JOIN country ON country.id = address.countryid 
 WHERE userid = $1	`;
 
-export const getRolesByUserId = `SELECT
-    users.email,
+export const getRolesByUseId = `SELECT
+    users.email AS email,
+		users.jwttoken AS jwttoken,
+		users.tokenDateEnd AS tokenDateEnd,
     roles.description AS role_name,
     roles.value AS role_value
 FROM user_roles

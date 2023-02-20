@@ -50,8 +50,10 @@ export class LocalAuthGuard extends AuthGuard('local') {
     );
     if (rez) {
       const payload = { username: user.email, sub: rez.dataValues.id };
+      const token = this.jwtService.sign(payload);
+      await this.userService.updateUserToken(rez.dataValues.id, token);
       return {
-        access_token: this.jwtService.sign(payload),
+        access_token: token,
       };
     } else {
       return rez;

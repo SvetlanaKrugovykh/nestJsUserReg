@@ -17,13 +17,10 @@ export class ArticlesService {
     return article;
   }
   async getArticle(articleDto: ArticleDto) {
-    const roleName = await this.roleServices.getRoleNameByUserId(
-      articleDto.userId.toString(),
-    );
     const article = await this.articleRepository.findOne({
       where: { id: articleDto.articleId },
     });
-    if (roleName === 'user') {
+    if (articleDto.jwttoken) {
       article.body = article.body.toString();
       return article;
     } else {

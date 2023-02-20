@@ -11,28 +11,46 @@ export class RolesGuard implements CanActivate {
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    let userId = null;
+    const serviceName = request._parsedUrl.path;
+    let roleName = 'user';
+    let user: any = {};
 
-    if (request.body.userId) {
-      userId = request.body.userId;
-    } else if (request.body.email) {
-      const user: any = await this.userService.getUserByOneProp(
+    if (!request.body.jwttoken) {
+      roleName = 'guest';
+      user = await this.userService.getUserByOneProp(
         'email',
         request.body.email,
       );
-      userId = user.id;
+    } else {
+      user = await this.userService.getUserByOneProp(
+        'jwttoken',
+        request.body.jwttoken,
+      );
+      if (!user) return false;
+      roleName = await this.roleServices.getRoleNameByUserId(user.id);
     }
-    const serviceName = request._parsedUrl.path;
 
-    if (!(userId || serviceName)) return false;
-
-    const roleName = await this.roleServices.getRoleNameByUserId(userId);
     const service = matching.find(
       (s) =>
         serviceName.includes(s.serviceName) && roleName.includes(s.roleName),
     );
+
     if (service) {
-      return true;
+      switch (service.roleName) {
+        case 'guest':
+          return true;
+        case 'user':
+          if (
+            request.body.jwttoken === user.jwttoken &&
+            user.tokenDateEnd > new Date()
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        case 'admin':
+          return true;
+      }
     } else {
       return false;
     }
